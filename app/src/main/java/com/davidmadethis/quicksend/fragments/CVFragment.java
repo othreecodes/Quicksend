@@ -11,10 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.davidmadethis.quicksend.R;
 
+import java.io.File;
 import java.net.URISyntaxException;
 
 import static android.app.Activity.RESULT_OK;
@@ -45,6 +48,9 @@ public class CVFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    private ImageView imageView;
+    private TextView textView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -52,6 +58,8 @@ public class CVFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_cv, container, false);
 
         Button button = (Button) v.findViewById(R.id.choose_file);
+        imageView = (ImageView) v.findViewById(R.id.file_type);
+        textView = (TextView) v.findViewById(R.id.file_name);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,10 +104,14 @@ public class CVFragment extends Fragment {
                         e.printStackTrace();
                     }
 
+                    setFileLogo(path);
+
                     Log.e(TAG, "File Path: " + path);
+
                     // Get the file instance
-                    // File file = new File(path);
-                    // Initiate the upload
+                    File file = new File(path);
+                    textView.setText(file.getName());
+                     //Initiate the upload
                 }
                 break;
         }
@@ -149,6 +161,32 @@ public class CVFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void setFileLogo(String fileLogo) {
+
+        //this.fileLogo = fileLogo;
+        String ext = fileLogo.substring(fileLogo.lastIndexOf("."));
+
+        switch (ext.toLowerCase()) {
+            case ".png":
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.png));
+                break;
+            case ".doc":
+            case ".docx":
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.doc));
+                break;
+            case ".pdf":
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.pdf));
+                break;
+            case "txt":
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.txt));
+                break;
+             default:
+                 imageView.setImageDrawable(getResources().getDrawable(R.drawable.file));
+                 break;
+        }
+
     }
 
     public interface OnFragmentInteractionListener {
