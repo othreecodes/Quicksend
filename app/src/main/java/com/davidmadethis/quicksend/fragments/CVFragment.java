@@ -179,8 +179,27 @@ public class CVFragment extends Fragment {
             case ".pdf":
                 imageView.setImageDrawable(getResources().getDrawable(R.drawable.pdf));
                 break;
-            case "txt":
+            case ".txt":
                 imageView.setImageDrawable(getResources().getDrawable(R.drawable.txt));
+                break;
+            case ".mp3":
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.mp3));
+                break;
+            case ".mp4":
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.mp4));
+                break;
+            case ".ppt":
+            case ".pptx":
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.ppt));
+                break;
+            case ".xls":
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.xls));
+                break;
+            case ".zip":
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.zip));
+                break;
+            case ".jpg":
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.jpg));
                 break;
              default:
                  imageView.setImageDrawable(getResources().getDrawable(R.drawable.file));
