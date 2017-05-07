@@ -74,7 +74,7 @@ public class HomeFragment extends Fragment {
         }
 
 
-        companyAdapter = new CompanyAdapter(companies);
+        companyAdapter = new CompanyAdapter(companies,mailRecyclerView);
         mailRecyclerView.setAdapter(companyAdapter);
         companyAdapter.notifyDataSetChanged();
 

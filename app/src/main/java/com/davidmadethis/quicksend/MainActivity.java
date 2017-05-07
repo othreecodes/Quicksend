@@ -1,5 +1,6 @@
 package com.davidmadethis.quicksend;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -69,6 +70,18 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.menu_about){
+
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://github.com/othreecodes/quicksend"));
+            startActivity(browserIntent);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
