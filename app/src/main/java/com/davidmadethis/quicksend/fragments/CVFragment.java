@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.davidmadethis.quicksend.R;
+import com.davidmadethis.quicksend.util.QPreferences;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -51,16 +52,29 @@ public class CVFragment extends Fragment {
 
     private ImageView imageView;
     private TextView textView;
-
+    private QPreferences preferences;
+    private Button button;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_cv, container, false);
 
-        Button button = (Button) v.findViewById(R.id.choose_file);
+        button = (Button) v.findViewById(R.id.choose_file);
+        preferences = new QPreferences(getContext());
+
+        String location = preferences.getCV_LOCATION();
         imageView = (ImageView) v.findViewById(R.id.file_type);
         textView = (TextView) v.findViewById(R.id.file_name);
+
+        if(location!=null){
+            try {
+                showChosenFile(location);
+            }catch (Exception e){
+                Toast.makeText(getContext(),"Something went wrong",Toast.LENGTH_LONG)
+                        .show();
+            }
+        }
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +84,13 @@ public class CVFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    public void showChosenFile(String path){
+        File file = new File(path);
+        textView.setText(file.getName());
+        setFileLogo(path);
+        button.setText(R.string.replace_file);
     }
 
     private void chooseFile() {
@@ -109,7 +130,7 @@ public class CVFragment extends Fragment {
                     Log.e(TAG, "File Path: " + path);
 
                     if (path==null){
-                       Toast.makeText(getContext(),"Could not select that file. Pleae choose another",Toast.LENGTH_LONG)
+                       Toast.makeText(getContext(),"Could not select that file. Please choose another",Toast.LENGTH_LONG)
                                .show();
 
                     }else {
@@ -117,6 +138,7 @@ public class CVFragment extends Fragment {
                         File file = new File(path);
                         textView.setText(file.getName());
                         setFileLogo(path);
+                        preferences.setCV_LOCATION(path);
                         //Initiate the upload
                     }
                 }
