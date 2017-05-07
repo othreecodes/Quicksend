@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import com.davidmadethis.quicksend.fragments.HomeFragment;
 import com.davidmadethis.quicksend.fragments.TemplatesFragment;
 
 public class MainActivity extends AppCompatActivity implements CVFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, TemplatesFragment.OnFragmentInteractionListener {
+
 
     private TextView mTextMessage;
     Fragment selectedFragment = null;
@@ -59,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, HomeFragment.newInstance());
         transaction.commit();
+
+
     }
 
     @Override

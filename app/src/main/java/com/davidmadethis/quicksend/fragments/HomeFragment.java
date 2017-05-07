@@ -4,11 +4,18 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.davidmadethis.quicksend.R;
+import com.davidmadethis.quicksend.adapters.CompanyAdapter;
+import com.davidmadethis.quicksend.models.Company;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,6 +40,9 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
+    private RecyclerView mailRecyclerView;
+    private CompanyAdapter companyAdapter;
+    private List<Company> companies;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +51,33 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View v =inflater.inflate(R.layout.fragment_home, container, false);
+        mailRecyclerView = (RecyclerView) v.findViewById(R.id.mail_recycler_view);
+
+        Company company = new Company();
+        company.setCompanyName("Hotels.ng");
+        company.setEmailAddress("mark@hotels.ng");
+        companies = new ArrayList<>();
+
+        Company company2 = new Company();
+        company2.setCompanyName("Konga");
+        company2.setEmailAddress("hr@konga.com");
+        companies.add(company);
+        companies.add(company2);
+        companies.add(company2);
+
+
+        companyAdapter  = new CompanyAdapter(companies);
+
+
+        mailRecyclerView.setHasFixedSize(false);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mailRecyclerView.setLayoutManager(layoutManager);
+
+        mailRecyclerView.setAdapter(companyAdapter);
+        companyAdapter.notifyDataSetChanged();
+
+        return v;
     }
 
 
