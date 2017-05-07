@@ -34,8 +34,18 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.inputEmail.setText(companies.get(position).getEmailAddress());
+        holder.checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(holder.checkBox.isSelected()){
+                    companies.get(position).setShouldSend(true);
+                }else{
+                    companies.get(position).setShouldSend(true);
+                }
+            }
+        });
     }
 
     @Override

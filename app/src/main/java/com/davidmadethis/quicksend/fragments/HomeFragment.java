@@ -6,24 +6,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
-import com.afollestad.materialdialogs.util.DialogUtils;
 import com.davidmadethis.quicksend.R;
 import com.davidmadethis.quicksend.adapters.CompanyAdapter;
 import com.davidmadethis.quicksend.models.Company;
+import com.davidmadethis.quicksend.util.CompanyStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +51,7 @@ public class HomeFragment extends Fragment {
     private CompanyAdapter companyAdapter;
     private List<Company> companies;
     private FloatingActionButton fab;
+    private CompanyStorage storage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,27 +65,23 @@ public class HomeFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
         mailRecyclerView = (RecyclerView) v.findViewById(R.id.mail_recycler_view);
         fab = (FloatingActionButton) v.findViewById(R.id.fab);
-        Company company = new Company();
-        company.setCompanyName("Hotels.ng");
-        company.setEmailAddress("mark@hotels.ng");
         companies = new ArrayList<>();
 
-        Company company2 = new Company();
-        company2.setCompanyName("Konga");
-        company2.setEmailAddress("hr@konga.com");
-        companies.add(company);
-        companies.add(company2);
-        companies.add(company2);
+        storage = new CompanyStorage();
+
+        if (storage.getAll(getContext()) != null) {
+            companies.addAll(storage.getAll(getContext()));
+        }
 
 
         companyAdapter = new CompanyAdapter(companies);
-
+        mailRecyclerView.setAdapter(companyAdapter);
+        companyAdapter.notifyDataSetChanged();
 
         mailRecyclerView.setHasFixedSize(false);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         mailRecyclerView.setLayoutManager(layoutManager);
-        mailRecyclerView.setAdapter(companyAdapter);
-        companyAdapter.notifyDataSetChanged();
+
 
         fab.setOnClickListener(fabListener);
         return v;
@@ -98,12 +91,12 @@ public class HomeFragment extends Fragment {
     private View.OnClickListener fabListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            LayoutInflater inflater = (LayoutInflater)getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final View v = inflater.inflate(R.layout.add_company,null);
+            LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View v = inflater.inflate(R.layout.add_company, null);
 
-             new MaterialDialog.Builder(getActivity())
+            new MaterialDialog.Builder(getActivity())
                     .title("Add Company")
-                    .customView(v,true)
+                    .customView(v, true)
                     .positiveText(R.string.add)
                     .theme(Theme.LIGHT)
                     .negativeText(R.string.cancel)
@@ -121,7 +114,9 @@ public class HomeFragment extends Fragment {
                             company.setCompanyName(nameEditText.getText().toString());
 
                             companies.add(company);
-//                            companyAdapter.notifyDataSetChanged();
+                            companyAdapter.notifyDataSetChanged();
+
+                            storage.saveAll(getContext(),companies);
                         }
                     }).show();
 
