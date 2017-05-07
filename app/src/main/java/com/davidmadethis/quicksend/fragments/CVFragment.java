@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -104,14 +105,20 @@ public class CVFragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    setFileLogo(path);
 
                     Log.e(TAG, "File Path: " + path);
 
-                    // Get the file instance
-                    File file = new File(path);
-                    textView.setText(file.getName());
-                     //Initiate the upload
+                    if (path==null){
+                       Toast.makeText(getContext(),"Could not select that file. Pleae choose another",Toast.LENGTH_LONG)
+                               .show();
+
+                    }else {
+                        // Get the file instance
+                        File file = new File(path);
+                        textView.setText(file.getName());
+                        setFileLogo(path);
+                        //Initiate the upload
+                    }
                 }
                 break;
         }
@@ -126,16 +133,18 @@ public class CVFragment extends Fragment {
 
             try {
                 cursor = context.getContentResolver().query(uri, projection, null, null, null);
+                assert cursor != null;
                 int column_index = cursor.getColumnIndexOrThrow("_data");
                 if (cursor.moveToFirst()) {
                     return cursor.getString(column_index);
                 }
+                cursor.close();
             } catch (Exception e) {
-                // Eat it
             }
         } else if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();
         }
+
 
         return null;
     }
@@ -166,6 +175,7 @@ public class CVFragment extends Fragment {
     public void setFileLogo(String fileLogo) {
 
         //this.fileLogo = fileLogo;
+
         String ext = fileLogo.substring(fileLogo.lastIndexOf("."));
 
         switch (ext.toLowerCase()) {
