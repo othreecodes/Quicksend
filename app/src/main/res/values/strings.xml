@@ -10,4 +10,5 @@
     <string name="replace_file">REPLACE FILE</string>
     <string name="no_file_chosen">NO FILE CHOSEN</string>
     <string name="send_mail">SEND MAIL</string>
+    <string name="add_mail_tosend">Send mail</string>
 </resources>
