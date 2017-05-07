@@ -6,17 +6,21 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.afollestad.materialdialogs.util.DialogUtils;
 import com.davidmadethis.quicksend.R;
 import com.davidmadethis.quicksend.adapters.CompanyAdapter;
 import com.davidmadethis.quicksend.models.Company;
@@ -60,7 +64,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+//        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.);
         View v = inflater.inflate(R.layout.fragment_home, container, false);
         mailRecyclerView = (RecyclerView) v.findViewById(R.id.mail_recycler_view);
         fab = (FloatingActionButton) v.findViewById(R.id.fab);
@@ -95,9 +99,9 @@ public class HomeFragment extends Fragment {
         @Override
         public void onClick(View view) {
             LayoutInflater inflater = (LayoutInflater)getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View v = inflater.inflate(R.layout.add_company,null);
+            final View v = inflater.inflate(R.layout.add_company,null);
 
-            MaterialDialog dialogg =  new MaterialDialog.Builder(getContext())
+             new MaterialDialog.Builder(getActivity())
                     .title("Add Company")
                     .customView(v,true)
                     .positiveText(R.string.add)
@@ -106,9 +110,18 @@ public class HomeFragment extends Fragment {
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            //TextView
+                            EditText nameEditText = (EditText) v.findViewById(R.id.input_name);
+                            EditText email = (EditText) v.findViewById(R.id.input_email);
 
+                            nameEditText.clearFocus();
+                            email.clearFocus();
 
+                            Company company = new Company();
+                            company.setEmailAddress(email.getText().toString());
+                            company.setCompanyName(nameEditText.getText().toString());
+
+                            companies.add(company);
+//                            companyAdapter.notifyDataSetChanged();
                         }
                     }).show();
 
