@@ -27,9 +27,9 @@
             android:id="@+id/file_name"
             android:textAlignment="center" />
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/choose_file"
-            style="@style/MyButton"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/choose_file" />

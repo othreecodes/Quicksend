@@ -9,4 +9,5 @@
     <string name="choose_file"> CHOOSE FILE</string>
     <string name="replace_file">REPLACE FILE</string>
     <string name="no_file_chosen">NO FILE CHOSEN</string>
+    <string name="send_mail">SEND MAIL</string>
 </resources>
