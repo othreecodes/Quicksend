@@ -79,6 +79,10 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
 
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://github.com/othreecodes/quicksend"));
             startActivity(browserIntent);
+        }else if (item.getItemId() == R.id.menu_settings){
+            Intent settingsIntent = new Intent(MainActivity.this,SettingsActivity.class);
+            startActivity(settingsIntent);
+
         }
 
         return super.onOptionsItemSelected(item);
