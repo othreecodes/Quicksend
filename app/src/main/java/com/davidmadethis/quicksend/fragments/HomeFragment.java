@@ -3,13 +3,20 @@ package com.davidmadethis.quicksend.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.davidmadethis.quicksend.R;
 import com.davidmadethis.quicksend.adapters.CompanyAdapter;
 import com.davidmadethis.quicksend.models.Company;
@@ -43,6 +50,8 @@ public class HomeFragment extends Fragment {
     private RecyclerView mailRecyclerView;
     private CompanyAdapter companyAdapter;
     private List<Company> companies;
+    private FloatingActionButton fab;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +60,10 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v =inflater.inflate(R.layout.fragment_home, container, false);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        View v = inflater.inflate(R.layout.fragment_home, container, false);
         mailRecyclerView = (RecyclerView) v.findViewById(R.id.mail_recycler_view);
-
+        fab = (FloatingActionButton) v.findViewById(R.id.fab);
         Company company = new Company();
         company.setCompanyName("Hotels.ng");
         company.setEmailAddress("mark@hotels.ng");
@@ -67,19 +77,43 @@ public class HomeFragment extends Fragment {
         companies.add(company2);
 
 
-        companyAdapter  = new CompanyAdapter(companies);
+        companyAdapter = new CompanyAdapter(companies);
 
 
         mailRecyclerView.setHasFixedSize(false);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         mailRecyclerView.setLayoutManager(layoutManager);
-
         mailRecyclerView.setAdapter(companyAdapter);
         companyAdapter.notifyDataSetChanged();
 
+        fab.setOnClickListener(fabListener);
         return v;
     }
 
+
+    private View.OnClickListener fabListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            LayoutInflater inflater = (LayoutInflater)getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View v = inflater.inflate(R.layout.add_company,null);
+
+            MaterialDialog dialogg =  new MaterialDialog.Builder(getContext())
+                    .title("Add Company")
+                    .customView(v,true)
+                    .positiveText(R.string.add)
+                    .theme(Theme.LIGHT)
+                    .negativeText(R.string.cancel)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            //TextView
+
+
+                        }
+                    }).show();
+
+        }
+    };
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

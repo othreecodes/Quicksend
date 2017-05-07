@@ -11,4 +11,9 @@
     <string name="no_file_chosen">NO FILE CHOSEN</string>
     <string name="send_mail">SEND MAIL</string>
     <string name="add_mail_tosend">Send mail</string>
+    <string name="edit_company_info">Edit Company Info</string>
+    <string name="add">ADD</string>
+    <string name="cancel">CANCEL</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
 </resources>

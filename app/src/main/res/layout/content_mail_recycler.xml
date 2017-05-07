@@ -17,8 +17,8 @@
             android:id="@+id/input_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:alpha="0.8"
-            android:hint="Email"
+            android:hint="@string/email"
+            android:enabled="false"
             android:inputType="textEmailAddress"
             android:padding="12dp" />
     </android.support.design.widget.TextInputLayout>
@@ -39,7 +39,7 @@
         android:layout_weight="0.15"
         app:srcCompat="@drawable/ic_edit_black_24dp"
         android:layout_height="60dp"
-        android:contentDescription="Edit Company Info" />
+        android:contentDescription="@string/edit_company_info" />
 
 
 </LinearLayout>
