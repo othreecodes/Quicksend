@@ -92,4 +92,5 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
             editButton = (ImageButton) itemView.findViewById(R.id.edit);
         }
     }
+
 }

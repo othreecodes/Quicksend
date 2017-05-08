@@ -3,12 +3,15 @@ package com.davidmadethis.quicksend.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.davidmadethis.quicksend.R;
+import com.davidmadethis.quicksend.adapters.TemplateAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,6 +35,10 @@ public class TemplatesFragment extends Fragment {
         return fragment;
     }
 
+    private RecyclerView recyclerView;
+    private FloatingActionButton floatingActionButton;
+    private TemplateAdapter templateAdapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +47,11 @@ public class TemplatesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_templates, container, false);
+        View v = inflater.inflate(R.layout.fragment_templates, container, false);
+        recyclerView = (RecyclerView) v.findViewById(R.id.templates_recycler_view);
+        floatingActionButton = (FloatingActionButton) v.findViewById(R.id.fab);
+
+        return v;
     }
 
     public void onButtonPressed(Uri uri) {
