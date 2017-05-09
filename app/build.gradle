@@ -30,6 +30,7 @@ dependencies {
     compile 'com.android.support:support-vector-drawable:25.3.1'
     compile 'com.afollestad.material-dialogs:core:0.9.4.4'
     compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.cocosw:bottomsheet:1.+@aar'
     compile 'com.android.support:support-v4:25.3.1'
     testCompile 'junit:junit:4.12'
 }

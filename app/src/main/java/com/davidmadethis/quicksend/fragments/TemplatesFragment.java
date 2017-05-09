@@ -1,11 +1,10 @@
 package com.davidmadethis.quicksend.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.internal.BottomNavigationMenu;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -21,6 +20,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.cocosw.bottomsheet.BottomSheet;
 import com.davidmadethis.quicksend.R;
 import com.davidmadethis.quicksend.adapters.TemplateAdapter;
 import com.davidmadethis.quicksend.models.Template;
@@ -107,9 +107,22 @@ public class TemplatesFragment extends Fragment {
         floatingActionButton.setOnClickListener(onClickListener);
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
-            public void onClick(View view, int position) {
-                BottomSheetDialog dialog = new BottomSheetDialog(getContext());
-                dialog.show();
+            public void onClick(View view, final int position) {
+                new BottomSheet.Builder(getActivity()).title(templates.get(position).getSubject()).sheet(R.menu.template_menu).listener(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case R.id.delete:
+                                //q.toast("Help me!");
+                                templates.remove(position);
+                                storage.saveAll(getContext(),templates);
+                                templateAdapter.notifyDataSetChanged();
+                                break;
+                            case R.id.edit:
+                                break;
+                        }
+                    }
+                }).show();
 
             }
 
