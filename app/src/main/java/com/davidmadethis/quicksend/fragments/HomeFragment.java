@@ -1,17 +1,25 @@
 package com.davidmadethis.quicksend.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -19,10 +27,30 @@ import com.afollestad.materialdialogs.Theme;
 import com.davidmadethis.quicksend.R;
 import com.davidmadethis.quicksend.adapters.CompanyAdapter;
 import com.davidmadethis.quicksend.models.Company;
+import com.davidmadethis.quicksend.models.Template;
 import com.davidmadethis.quicksend.util.CompanyStorage;
+import com.davidmadethis.quicksend.util.QPreferences;
+import com.davidmadethis.quicksend.util.TemplateStorage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,6 +80,9 @@ public class HomeFragment extends Fragment {
     private List<Company> companies;
     private FloatingActionButton fab;
     private CompanyStorage storage;
+    private AppCompatButton sendButton;
+    private List<String> emailsToSend;
+    SharedPreferences preferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,16 +96,18 @@ public class HomeFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
         mailRecyclerView = (RecyclerView) v.findViewById(R.id.mail_recycler_view);
         fab = (FloatingActionButton) v.findViewById(R.id.fab);
+        sendButton = (AppCompatButton) v.findViewById(R.id.mail_button);
         companies = new ArrayList<>();
+        preferences = PreferenceManager.getDefaultSharedPreferences(this.getContext());
 
+        emailsToSend = new ArrayList<>();
         storage = new CompanyStorage();
 
         if (storage.getAll(getContext()) != null) {
             companies.addAll(storage.getAll(getContext()));
         }
 
-
-        companyAdapter = new CompanyAdapter(companies,mailRecyclerView);
+        companyAdapter = new CompanyAdapter(companies, mailRecyclerView);
         mailRecyclerView.setAdapter(companyAdapter);
         companyAdapter.notifyDataSetChanged();
 
@@ -84,6 +117,50 @@ public class HomeFragment extends Fragment {
 
 
         fab.setOnClickListener(fabListener);
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                emailsToSend.clear();
+
+                for (Company com : companyAdapter.getCompaniesToSend()) {
+                    if (com.isShouldSend()) {
+                        emailsToSend.add(com.getEmailAddress());
+                    }
+                }
+
+
+                Log.e("ddd", String.valueOf(emailsToSend.size()));
+                if (emailsToSend.isEmpty()) {
+                    Toast.makeText(getContext(), "You did not select any email", Toast.LENGTH_LONG)
+                            .show();
+                    return;
+                }
+
+                TemplateStorage storage = new TemplateStorage();
+                final List<Template> templates = storage.getAll(getContext());
+                new MaterialDialog.Builder(getContext())
+                        .title("Choose Template")
+                        .items(templates)
+                        .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
+                            @Override
+                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+
+
+                                for (Company company : companyAdapter.getCompaniesToSend()) {
+
+                                           }
+
+
+                                return true;
+                            }
+                        })
+                        .positiveText("SEND")
+                        .show();
+
+
+            }
+        });
         return v;
     }
 
@@ -116,7 +193,7 @@ public class HomeFragment extends Fragment {
                             companies.add(company);
                             companyAdapter.notifyDataSetChanged();
 
-                            storage.saveAll(getContext(),companies);
+                            storage.saveAll(getContext(), companies);
                         }
                     }).show();
 
@@ -146,18 +223,164 @@ public class HomeFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        }
+        return false;
+    }
+
+
+    private Properties getGmailSettings() {
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+
+        return props;
+    }
+
+    private Properties getOutlookSettings() {
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp-mail.outlook.com");
+        props.put("mail.smtp.port", "587");
+        return props;
+    }
+
+
+    private Properties getYahooSettings() {
+
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.mail.yahoo.com");
+        props.put("mail.smtp.port", "587");
+
+        return props;
+    }
+
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+
+    class SendEmail extends AsyncTask<String, Void, String> {
+
+        private Exception exception;
+
+        Template template;
+        String email;
+        String password;
+        Company company;
+
+        public SendEmail(Template template, String email, String password, Company company) {
+            this.template = template;
+            this.email = email;
+            this.password = password;
+            this.company = company;
+
+        }
+
+        protected String doInBackground(String... urls) {
+
+            final String email = this.email;
+            final String password = this.password;
+            Properties properties = null;
+
+            if (email.toLowerCase().endsWith("gmail.com")) {
+                properties = getGmailSettings();
+            } else if (email.toLowerCase().endsWith("outlook.com")) {
+                properties = getOutlookSettings();
+            } else if (email.toLowerCase().endsWith("yahoo.com")) {
+                properties = getYahooSettings();
+            }
+
+
+            Session session = Session.getInstance(properties,
+                    new javax.mail.Authenticator() {
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(email, password);
+                        }
+                    });
+
+
+            try {
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress(email));
+
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(company.getEmailAddress()));
+                message.setSubject(filterTemplate(template.getSubject(), company));
+                File cv;
+                try {
+                    QPreferences preferences = new QPreferences(getContext());
+                    cv = new File(preferences.getCV_LOCATION());
+                } catch (Exception e) {
+
+                    Toast.makeText(getContext(), "Could not access CV", Toast.LENGTH_LONG)
+                            .show();
+                    return "";
+                }
+
+                BodyPart messageBody = new MimeBodyPart();
+
+
+                String sendvia = "<a href=\"http://www.github.com/othreecodes/quicksend\">Sent Via QuickSend</a>";
+                messageBody.setContent(filterTemplate(template.getMessage() + "\n\n" + sendvia, company), "text/html");
+
+
+                MimeBodyPart messageBodyPart = new MimeBodyPart();
+
+                Multipart multipart = new MimeMultipart();
+
+
+                multipart.addBodyPart(messageBody);
+
+                messageBodyPart = new MimeBodyPart();
+                String file = cv.getAbsolutePath();
+                String fileName = cv.getName();
+                DataSource source = new FileDataSource(file);
+                messageBodyPart.setDataHandler(new DataHandler(source));
+                messageBodyPart.setFileName(fileName);
+
+                multipart.addBodyPart(messageBodyPart);
+
+                message.setContent(multipart);
+                Transport.send(message);
+
+                System.out.println("Done");
+
+            } catch (MessagingException e) {
+                Log.e("error", e.toString());
+            }
+
+            return "";
+
+        }
+
+        protected void onPostExecute(String feed) {
+
+        }
+    }
+
+
+    String filterTemplate(String template, Company company) {
+
+        return template.replace("{{company}}", company.getCompanyName())
+                .replace("{{name}}", preferences.getString("name", ""))
+                .replace("{{job}}", preferences.getString("position", ""));
+
+    }
+
+
 }

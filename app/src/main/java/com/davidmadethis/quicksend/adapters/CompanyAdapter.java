@@ -14,6 +14,7 @@ import com.davidmadethis.quicksend.R;
 import com.davidmadethis.quicksend.models.Company;
 import com.davidmadethis.quicksend.util.CompanyStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,9 +28,11 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
 
     private CompanyStorage storage;
 
+    List<Company> companiesToSend;
     public CompanyAdapter(List<Company> companies, RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
         this.companies = companies;
+        companiesToSend = new ArrayList<>();
         storage = new CompanyStorage();
     }
 
@@ -41,6 +44,10 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
 
     }
 
+    public List<Company> getCompaniesToSend() {
+        return companiesToSend;
+    }
+
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.inputEmail.setText(companies.get(position).getEmailAddress());
@@ -48,12 +55,21 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 companies.get(position).setShouldSend(b);
-                if (b)
+                if (b) {
+                    companiesToSend.add(companies.get(position));
                     Snackbar.make(recyclerView, companies.get(position).getCompanyName() + " selected", Snackbar.LENGTH_SHORT)
                             .show();
+                }
+                else{
+                    companies.get(position).setShouldSend(false);
+                    companiesToSend.remove(companies.get(position));
+                }
+
 
             }
         });
+
+
 
         holder.editButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +106,12 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
             inputEmail.setKeyListener(null);
             checkBox = (CheckBox) itemView.findViewById(R.id.checkbox);
             editButton = (ImageButton) itemView.findViewById(R.id.edit);
+            checkBox.setChecked(false);
         }
     }
+
+
+
+
 
 }

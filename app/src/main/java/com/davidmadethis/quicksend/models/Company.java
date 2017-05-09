@@ -9,7 +9,7 @@ public class Company {
     private String emailAddress;
     private boolean editAble;
     private String companyName;
-    private boolean shouldSend;
+    private boolean shouldSend = false;
 
     public String getEmailAddress() {
         return emailAddress;

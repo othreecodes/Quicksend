@@ -24,4 +24,9 @@ public class Template {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    @Override
+    public String toString() {
+        return this.getSubject();
+    }
 }

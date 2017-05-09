@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import com.davidmadethis.quicksend.models.Company;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,7 +23,6 @@ public class CompanyStorage {
 
         SharedPreferences settings;
         SharedPreferences.Editor editor;
-
         settings = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         editor = settings.edit();
 
@@ -43,22 +41,18 @@ public class CompanyStorage {
 
         settings = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        if (settings.contains(DATA))
-        {
+        if (settings.contains(DATA)) {
             String json = settings.getString(DATA, null);
             Gson gson = new Gson();
             Company[] companies1 = gson.fromJson(json, Company[].class);
 
             companies = Arrays.asList(companies1);
-        }
-        else
-        {
+        } else {
             return null;
         }
 
         return companies;
     }
-
 
 
 }
