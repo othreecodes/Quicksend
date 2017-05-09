@@ -2,8 +2,10 @@ package com.davidmadethis.quicksend.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +68,8 @@ public class TemplatesFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    SharedPreferences preferences;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,20 +77,24 @@ public class TemplatesFragment extends Fragment {
         recyclerView = (RecyclerView) v.findViewById(R.id.templates_recycler_view);
         floatingActionButton = (FloatingActionButton) v.findViewById(R.id.fab);
 
-        Snackbar snackbar = Snackbar.make(recyclerView, "You can use {{company}} to represent the company name," +
-                " {{name}} to represent your name and {{job}} to represent the position you seek" +
-                ". NB: You must have filled this in already in Settings", Snackbar.LENGTH_INDEFINITE)
-                .setAction("GOT IT", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(this.getContext());
 
-                    }
-                });
+        if (preferences.getBoolean("tips", true)) {
+            Snackbar snackbar = Snackbar.make(recyclerView, "You can use {{company}} to represent the company name," +
+                    " {{name}} to represent your name and {{job}} to represent the position you seek" +
+                    ". NB: You must have filled this in already in Settings", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("GOT IT", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    });
+            final TextView textView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+            textView.setMaxLines(5);
+            snackbar.show();
+        }
 
 
-        final TextView textView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setMaxLines(5);
-        snackbar.show();
         storage = new TemplateStorage();
 
 
@@ -132,7 +141,7 @@ public class TemplatesFragment extends Fragment {
                                 new MaterialDialog.Builder(getActivity())
                                         .title("Edit Mail Template")
                                         .customView(v, true)
-                                        .positiveText(R.string.edit)
+                                        .positiveText(R.string.save)
                                         .theme(Theme.LIGHT)
                                         .negativeText(R.string.cancel)
                                         .onPositive(new MaterialDialog.SingleButtonCallback() {

@@ -8,19 +8,38 @@
             android:key="name"
             android:defaultValue="@string/author_name"
             android:summary="Please fill in your name"
-            android:title="Your name"></EditTextPreference>
+            android:title="Your name" />
 
         <EditTextPreference
             android:key="email"
             android:defaultValue="@string/author_email"
             android:summary="Please fill in your email address"
-            android:title="Your email"></EditTextPreference>
+            android:title="Your email" />
 
         <EditTextPreference
             android:key="position"
             android:defaultValue="@string/job"
             android:summary="Please your job position you seek"
-            android:title="Deault Job Position"></EditTextPreference>
+            android:title="Default Job Position" />
     </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="Application Settings">
+
+        <SwitchPreference
+            android:key="tips"
+            android:defaultValue="true"
+            android:summary="Shows tips in the application "
+            android:title="Show Tips" />
+
+
+        <SwitchPreference
+            android:key="sendvia"
+            android:defaultValue="true"
+            android:summary="Adds 'Sent Via Quick Send' at the end of every mail"
+            android:title="Show Watermark" />
+    </PreferenceCategory>
+
+
 
 </PreferenceScreen>
