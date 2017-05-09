@@ -4,14 +4,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.internal.BottomNavigationMenu;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -57,6 +58,7 @@ public class TemplatesFragment extends Fragment {
     private TemplateAdapter templateAdapter;
     private List<Template> templates;
     private TemplateStorage storage;
+    private ActionMode mode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,7 +82,6 @@ public class TemplatesFragment extends Fragment {
                     }
                 });
 
-        setHasOptionsMenu(false);
 
         TextView textView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
         textView.setMaxLines(5);
@@ -100,30 +101,27 @@ public class TemplatesFragment extends Fragment {
         templateAdapter.notifyDataSetChanged();
 
         recyclerView.setHasFixedSize(false);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecorator(getContext(),DividerItemDecorator.VERTICAL_LIST));
+        recyclerView.addItemDecoration(new DividerItemDecorator(getContext(), DividerItemDecorator.VERTICAL_LIST));
         floatingActionButton.setOnClickListener(onClickListener);
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
+                BottomSheetDialog dialog = new BottomSheetDialog(getContext());
+                dialog.show();
 
             }
 
             @Override
             public void onLongClick(View view, int position) {
 
-
             }
+
         }));
         return v;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.template_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
