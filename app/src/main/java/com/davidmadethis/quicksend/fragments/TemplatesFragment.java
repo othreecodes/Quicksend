@@ -83,7 +83,7 @@ public class TemplatesFragment extends Fragment {
                 });
 
 
-        TextView textView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        final TextView textView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
         textView.setMaxLines(5);
         snackbar.show();
         storage = new TemplateStorage();
@@ -115,10 +115,48 @@ public class TemplatesFragment extends Fragment {
                             case R.id.delete:
                                 //q.toast("Help me!");
                                 templates.remove(position);
-                                storage.saveAll(getContext(),templates);
+                                storage.saveAll(getContext(), templates);
                                 templateAdapter.notifyDataSetChanged();
                                 break;
                             case R.id.edit:
+
+                                LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                final View v = inflater.inflate(R.layout.add_template, null);
+
+                                EditText subjectEditText = (EditText) v.findViewById(R.id.input_subject);
+                                EditText bodyEditText = (EditText) v.findViewById(R.id.input_text);
+
+                                subjectEditText.setText(templates.get(position).getSubject());
+                                bodyEditText.setText(templates.get(position).getMessage());
+
+                                new MaterialDialog.Builder(getActivity())
+                                        .title("Edit Mail Template")
+                                        .customView(v, true)
+                                        .positiveText(R.string.edit)
+                                        .theme(Theme.LIGHT)
+                                        .negativeText(R.string.cancel)
+                                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                            @Override
+                                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                EditText subjectEditText = (EditText) v.findViewById(R.id.input_subject);
+                                                EditText bodyEditText = (EditText) v.findViewById(R.id.input_text);
+
+                                                subjectEditText.clearFocus();
+                                                bodyEditText.clearFocus();
+
+                                                Template template = templates.get(position);
+                                                template.setSubject(subjectEditText.getText().toString());
+                                                template.setMessage(bodyEditText.getText().toString());
+
+
+                                                storage.saveAll(getContext(), templates);
+                                                templateAdapter.notifyDataSetChanged();
+
+
+                                            }
+                                        }).show();
+
+
                                 break;
                         }
                     }
