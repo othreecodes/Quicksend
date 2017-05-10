@@ -1,5 +1,8 @@
-# Quicksend
-Send Bulk Emails, Just because you can ;)
+#  Quicksend 
+
+<img src="https://github.com/othreecodes/Quicksend/raw/gh-pages/quicksend.png" height="200"/> 
+
+* Send Bulk Emails, Just because you can ;)
 
 # Hey What's this?
 Its A little App that helps you send bulk emails to prospective employers with your CV attached.
