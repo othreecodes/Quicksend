@@ -149,7 +149,8 @@ public class HomeFragment extends Fragment {
 
                                 for (Company company : companyAdapter.getCompaniesToSend()) {
 
-                                           }
+
+                                }
 
 
                                 return true;
@@ -378,7 +379,9 @@ public class HomeFragment extends Fragment {
 
         return template.replace("{{company}}", company.getCompanyName())
                 .replace("{{name}}", preferences.getString("name", ""))
-                .replace("{{job}}", preferences.getString("position", ""));
+                .replace("{{job}}", preferences.getString("position", ""))
+                .replace("\n", "<br>");
+
 
     }
 

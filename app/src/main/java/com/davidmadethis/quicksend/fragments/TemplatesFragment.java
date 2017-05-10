@@ -90,7 +90,7 @@ public class TemplatesFragment extends Fragment {
                         }
                     });
             final TextView textView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
-            textView.setMaxLines(5);
+            textView.setMaxLines(10);
             snackbar.show();
         }
 
