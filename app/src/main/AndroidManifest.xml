@@ -3,9 +3,11 @@
     package="com.davidmadethis.quicksend">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.US" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -27,17 +29,17 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/settings">
-
             <intent-filter>
                 <action android:name="com.davidmadethis.quicksend.SettingsActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.davidmadethis.quicksend.MainActivity" />
-
         </activity>
+        <activity android:name=".EmailFailedActivity"></activity>
     </application>
 
 </manifest>

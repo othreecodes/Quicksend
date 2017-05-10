@@ -12,7 +12,7 @@
 
         <EditTextPreference
             android:key="email"
-            android:defaultValue="@string/author_email"
+            android:defaultValue="@string/demo_email"
             android:summary="Please fill in your email address"
             android:title="Your email" />
 
@@ -38,6 +38,14 @@
             android:defaultValue="true"
             android:summary="Adds 'Sent Via Quick Send' at the end of every mail"
             android:title="Show Watermark" />
+
+        <SwitchPreference
+            android:key="cv"
+            android:defaultValue="true"
+            android:summary="Attaches CV to every mail that is sent Via the App"
+            android:title="Attach CV" />
+
+
     </PreferenceCategory>
 
 

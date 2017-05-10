@@ -27,9 +27,9 @@
         <EditText
             android:id="@+id/input_text"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="120dp"
             android:hint="Body"
-            android:minHeight="20dp"
+            android:minHeight="50dp"
             android:inputType="textMultiLine"
             android:padding="12dp" />
     </android.support.design.widget.TextInputLayout>

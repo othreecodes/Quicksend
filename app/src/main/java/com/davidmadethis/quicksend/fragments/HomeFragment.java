@@ -1,7 +1,12 @@
 package com.davidmadethis.quicksend.fragments;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -10,7 +15,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,11 +26,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.davidmadethis.quicksend.EmailFailedActivity;
+import com.davidmadethis.quicksend.MainActivity;
 import com.davidmadethis.quicksend.R;
 import com.davidmadethis.quicksend.adapters.CompanyAdapter;
 import com.davidmadethis.quicksend.models.Company;
@@ -34,6 +44,7 @@ import com.davidmadethis.quicksend.util.TemplateStorage;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -100,6 +111,18 @@ public class HomeFragment extends Fragment {
         companies = new ArrayList<>();
         preferences = PreferenceManager.getDefaultSharedPreferences(this.getContext());
 
+        if (preferences.getBoolean("tips", true)) {
+            Snackbar snackbar = Snackbar.make(mailRecyclerView, "Visit Settings to update your personal details and App preferences", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("GOT IT", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    });
+            final TextView textView = (TextView) snackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+            textView.setMaxLines(10);
+            snackbar.show();
+        }
         emailsToSend = new ArrayList<>();
         storage = new CompanyStorage();
 
@@ -131,6 +154,7 @@ public class HomeFragment extends Fragment {
 
 
                 Log.e("ddd", String.valueOf(emailsToSend.size()));
+
                 if (emailsToSend.isEmpty()) {
                     Toast.makeText(getContext(), "You did not select any email", Toast.LENGTH_LONG)
                             .show();
@@ -139,6 +163,14 @@ public class HomeFragment extends Fragment {
 
                 TemplateStorage storage = new TemplateStorage();
                 final List<Template> templates = storage.getAll(getContext());
+                if (templates.size() < 1) {
+                    Toast.makeText(getContext(), "No templates available." +
+                            "Add one in the templates tab", Toast.LENGTH_LONG)
+                            .show();
+                    return;
+                }
+
+
                 new MaterialDialog.Builder(getContext())
                         .title("Choose Template")
                         .items(templates)
@@ -147,12 +179,7 @@ public class HomeFragment extends Fragment {
                             public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
 
 
-                                for (Company company : companyAdapter.getCompaniesToSend()) {
-
-
-                                }
-
-
+                                Authenticate(templates.get(which),companyAdapter.getCompaniesToSend());
                                 return true;
                             }
                         })
@@ -163,6 +190,51 @@ public class HomeFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    private String username;
+    private String password;
+
+    private MaterialDialog Authenticate(final Template template, final List<Company> companies) {
+
+        LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View v = inflater.inflate(R.layout.content_login, null);
+
+        EditText nameEditText = (EditText) v.findViewById(R.id.input_email);
+        nameEditText.setText(preferences.getString("email", ""));
+
+        return new MaterialDialog.Builder(getActivity())
+                .title("Authentication Required")
+                .customView(v, true)
+                .positiveText("Login")
+                .theme(Theme.DARK)
+                .negativeText(R.string.cancel)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        EditText nameEditText = (EditText) v.findViewById(R.id.input_email);
+                        EditText email = (EditText) v.findViewById(R.id.input_password);
+
+                        nameEditText.clearFocus();
+                        email.clearFocus();
+
+
+                        username = nameEditText.getText().toString();
+                        password = email.getText().toString();
+                        preferences.edit().putString("email",username).apply();
+
+                        for (Company company : companies){
+                            new SendEmail(template,username,password,company).execute();
+                        }
+
+
+                        Toast.makeText(getContext(), "Emails will be sent in the background, " +
+                                "Check Statusbar for progress", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }).show();
+
+
     }
 
 
@@ -285,12 +357,34 @@ public class HomeFragment extends Fragment {
         String password;
         Company company;
 
+        NotificationCompat.Builder mBuilder;
+        int notificationId;
+        NotificationManager mNotifyManager;
+
         public SendEmail(Template template, String email, String password, Company company) {
             this.template = template;
             this.email = email;
             this.password = password;
             this.company = company;
 
+        }
+
+        public NotificationCompat.Builder showNotification() {
+
+            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            notificationId = (int) new Date().getTime();
+            mNotifyManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+            mBuilder = new NotificationCompat.Builder(getActivity());
+            mBuilder.setContentTitle("Sending mail to " + this.company.getCompanyName())
+                    .setContentText("Sending...")
+                    .setSound(defaultSoundUri)
+                    .setSmallIcon(R.drawable.ic_stat_name);
+
+            mBuilder.setProgress(100, 100, true);
+            // Displays the progress bar for the first time.
+            mNotifyManager.notify(notificationId, mBuilder.build());
+
+            return mBuilder;
         }
 
         protected String doInBackground(String... urls) {
@@ -305,6 +399,8 @@ public class HomeFragment extends Fragment {
                 properties = getOutlookSettings();
             } else if (email.toLowerCase().endsWith("yahoo.com")) {
                 properties = getYahooSettings();
+            } else {
+                return "nosupport";
             }
 
 
@@ -317,60 +413,109 @@ public class HomeFragment extends Fragment {
 
 
             try {
+                NotificationCompat.Builder builder = showNotification();
                 Message message = new MimeMessage(session);
                 message.setFrom(new InternetAddress(email));
 
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(company.getEmailAddress()));
                 message.setSubject(filterTemplate(template.getSubject(), company));
-                File cv;
-                try {
-                    QPreferences preferences = new QPreferences(getContext());
-                    cv = new File(preferences.getCV_LOCATION());
-                } catch (Exception e) {
 
-                    Toast.makeText(getContext(), "Could not access CV", Toast.LENGTH_LONG)
-                            .show();
-                    return "";
-                }
 
                 BodyPart messageBody = new MimeBodyPart();
 
 
-                String sendvia = "<a href=\"http://www.github.com/othreecodes/quicksend\">Sent Via QuickSend</a>";
+                String sendvia = "";
+                if (preferences.getBoolean("sendvia", true)) {
+                    sendvia = "<a href=\"http://www.github.com/othreecodes/quicksend\">Sent Via QuickSend</a>";
+                }
                 messageBody.setContent(filterTemplate(template.getMessage() + "\n\n" + sendvia, company), "text/html");
 
 
-                MimeBodyPart messageBodyPart = new MimeBodyPart();
-
                 Multipart multipart = new MimeMultipart();
-
-
                 multipart.addBodyPart(messageBody);
 
-                messageBodyPart = new MimeBodyPart();
-                String file = cv.getAbsolutePath();
-                String fileName = cv.getName();
-                DataSource source = new FileDataSource(file);
-                messageBodyPart.setDataHandler(new DataHandler(source));
-                messageBodyPart.setFileName(fileName);
+                if (preferences.getBoolean("cv", false)) {
+                    File cv;
+                    try {
+                        QPreferences preferences = new QPreferences(getContext());
+                        cv = new File(preferences.getCV_LOCATION());
+                        MimeBodyPart FileBodyPart = new MimeBodyPart();
+                        FileBodyPart = new MimeBodyPart();
+                        String file = cv.getAbsolutePath();
+                        String fileName = cv.getName();
+                        DataSource source = new FileDataSource(preferences.getCV_LOCATION());
 
-                multipart.addBodyPart(messageBodyPart);
+                        Log.e("jjj", source.toString());
+                        Log.e("kkk", cv.getAbsolutePath());
+                        Log.e("lll", preferences.getCV_LOCATION());
+                        Log.e("mmm", cv.getCanonicalPath());
+                        FileBodyPart.setDataHandler(new DataHandler(source));
+                        FileBodyPart.setFileName(fileName);
 
+                        multipart.addBodyPart(FileBodyPart);
+                    } catch (Exception e) {
+
+                        Toast.makeText(getContext(), "Could not access CV", Toast.LENGTH_LONG)
+                                .show();
+                        return "";
+                    }
+
+                }
                 message.setContent(multipart);
                 Transport.send(message);
 
-                System.out.println("Done");
 
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+
+                PendingIntent pIntent = PendingIntent.getActivity(getActivity(), (int) System.currentTimeMillis(), intent, 0);
+
+                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                NotificationCompat.Builder n = builder
+                        .setContentTitle("Your mail to " + company.getCompanyName() + " was successfully sent")
+                        .setContentText("Mail Successfully sent")
+                        .setSmallIcon(R.drawable.ic_stat_name)
+                        .setContentIntent(pIntent)
+                        .setProgress(0, 0, false)
+                        .setSound(defaultSoundUri)
+                        .setAutoCancel(true);
+
+
+                mNotifyManager.notify(notificationId, n.build());
             } catch (MessagingException e) {
-                Log.e("error", e.toString());
+
+
+                Intent intent = new Intent(getActivity(), EmailFailedActivity.class);
+
+                intent.putExtra("error", e.getMessage());
+                PendingIntent pIntent = PendingIntent.getActivity(getActivity(), (int) System.currentTimeMillis(), intent, 0);
+
+                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Notification n = mBuilder
+                        .setContentTitle("Your mail to " + company.getCompanyName() + " was not sent")
+                        .setContentText(e.getMessage())
+                        .setSmallIcon(R.drawable.ic_stat_name)
+                        .setContentIntent(pIntent)
+                        .setSound(defaultSoundUri)
+                        .addAction(R.drawable.ic_send_black_24dp, "Report", pIntent)
+                        .setProgress(0, 0, false)
+                        .setAutoCancel(false)
+                        .build();
+
+
+                mNotifyManager.notify(notificationId, n);
+
             }
 
             return "";
 
         }
+        protected void onPostExecute(String data) {
 
-        protected void onPostExecute(String feed) {
-
+            if(data.equals("nosupport")){
+                Toast.makeText(getContext(), "We Currently do not support your email provider ", Toast.LENGTH_LONG)
+                        .show();
+            }
         }
     }
 

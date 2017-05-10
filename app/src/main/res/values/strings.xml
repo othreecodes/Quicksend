@@ -5,6 +5,7 @@
     <string name="title_notifications">Notifications</string>
     <string name="author_name">Obi Uchenna David</string>
     <string name="author_email">contact@davidmadethis.com</string>
+    <string name="demo_email">email@provider.com</string>
     <string name="job">Software Developer</string>
 
     <!-- TODO: Remove or change this placeholder text -->

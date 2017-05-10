@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,9 +18,15 @@ import android.widget.Toast;
 
 import com.davidmadethis.quicksend.R;
 import com.davidmadethis.quicksend.util.QPreferences;
+import com.vincent.filepicker.Constant;
+import com.vincent.filepicker.activity.NormalFilePickActivity;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.channels.FileChannel;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -54,6 +60,7 @@ public class CVFragment extends Fragment {
     private TextView textView;
     private QPreferences preferences;
     private Button button;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -67,11 +74,11 @@ public class CVFragment extends Fragment {
         imageView = (ImageView) v.findViewById(R.id.file_type);
         textView = (TextView) v.findViewById(R.id.file_name);
 
-        if(location!=null){
+        if (location != null) {
             try {
                 showChosenFile(location);
-            }catch (Exception e){
-                Toast.makeText(getContext(),"Something went wrong",Toast.LENGTH_LONG)
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG)
                         .show();
             }
         }
@@ -86,7 +93,7 @@ public class CVFragment extends Fragment {
         return v;
     }
 
-    public void showChosenFile(String path){
+    public void showChosenFile(String path) {
         File file = new File(path);
         textView.setText(file.getName());
         setFileLogo(path);
@@ -101,11 +108,19 @@ public class CVFragment extends Fragment {
             startActivityForResult(
                     Intent.createChooser(intent, "Select a File to Upload"),
                     FILE_SELECT_CODE);
+
         } catch (android.content.ActivityNotFoundException ex) {
             // Potentially direct the user to the Market with a Dialog
             Toast.makeText(getActivity(), "Please install a File Manager.",
                     Toast.LENGTH_SHORT).show();
         }
+
+//        Intent intent = new Intent(getActivity(), NormalFilePickActivity.class);
+//        intent.putExtra(Constant.MAX_NUMBER, 1);
+//        intent.putExtra(NormalFilePickActivity.SUFFIX, new String[] {"xlsx", "xls", "doc", "docx", "ppt", "pptx", "pdf"});
+//        startActivityForResult(intent, Constant.REQUEST_CODE_PICK_FILE);
+
+
     }
 
     private static final int FILE_SELECT_CODE = 100;
@@ -129,23 +144,68 @@ public class CVFragment extends Fragment {
 
                     Log.e(TAG, "File Path: " + path);
 
-                    if (path==null){
-                       Toast.makeText(getContext(),"Could not select that file. Please choose another",Toast.LENGTH_LONG)
-                               .show();
+                    if (path == null) {
+                        Toast.makeText(getActivity().getApplicationContext(), "Could not select that file. Please choose another", Toast.LENGTH_LONG)
+                                .show();
 
-                    }else {
+                    } else {
                         // Get the file instance
                         File file = new File(path);
                         textView.setText(file.getName());
                         setFileLogo(path);
-                        preferences.setCV_LOCATION(path);
-                        //Initiate the upload
+                        preferences.setCV_LOCATION(CopyFile(file));
+
+                        Log.e("file",preferences.getCV_LOCATION());
                     }
                 }
                 break;
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    private String CopyFile(File file) {
+        File fre = new File(getActivity().getExternalFilesDir(null) + File.separator + file.getName());
+        if (!fre.exists()) {
+
+
+            try {
+                copyFile(file,fre);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return fre.getAbsolutePath();
+
+        } else {
+            return fre.getAbsolutePath();
+        }
+
+    }
+
+    public static void copyFile(File sourceFile, File destFile) throws IOException {
+        if (!destFile.getParentFile().exists())
+            destFile.getParentFile().mkdirs();
+
+        if (!destFile.exists()) {
+            destFile.createNewFile();
+        }
+
+        FileChannel source = null;
+        FileChannel destination = null;
+
+        try {
+            source = new FileInputStream(sourceFile).getChannel();
+            destination = new FileOutputStream(destFile).getChannel();
+            destination.transferFrom(source, 0, source.size());
+        } finally {
+            if (source != null) {
+                source.close();
+            }
+            if (destination != null) {
+                destination.close();
+            }
+        }
     }
 
     public static String getPath(Context context, Uri uri) throws URISyntaxException {
@@ -160,8 +220,10 @@ public class CVFragment extends Fragment {
                 if (cursor.moveToFirst()) {
                     return cursor.getString(column_index);
                 }
-                cursor.close();
+
             } catch (Exception e) {
+            } finally {
+                cursor.close();
             }
         } else if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();
@@ -233,9 +295,9 @@ public class CVFragment extends Fragment {
             case ".jpg":
                 imageView.setImageDrawable(getResources().getDrawable(R.drawable.jpg));
                 break;
-             default:
-                 imageView.setImageDrawable(getResources().getDrawable(R.drawable.file));
-                 break;
+            default:
+                imageView.setImageDrawable(getResources().getDrawable(R.drawable.file));
+                break;
         }
 
     }
