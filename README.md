@@ -7,8 +7,11 @@
 # Hey What's this?
 Its A little App that helps you send bulk emails to prospective employers with your CV attached.
 
+# Download
+Download the app [Here](https://github.com/othreecodes/Quicksend/releases/download/1.0.0/QuickSend.apk)
+
 # Known Limitation
-Google Sometimes Blocks Gmail users from sending Emails from Unknown Sources. You might have to enable that to send mails via the app. Read more here - https://support.google.com/accounts/answer/6010255?hl=en
+Google Sometimes Blocks Gmail users from sending Emails from Unknown Sources. You might have to enable that to send mails via the app. Read more here - [Allowing less secure apps to access your account - Google Account Help](https://support.google.com/accounts/answer/6010255?hl=en)
 
 # Screenshots
 
