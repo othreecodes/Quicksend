@@ -437,7 +437,7 @@ public class HomeFragment extends Fragment {
                 Multipart multipart = new MimeMultipart();
                 multipart.addBodyPart(messageBody);
 
-                if (preferences.getBoolean("cv", false)) {
+                if (preferences.getBoolean("cv", true)) {
                     File cv;
                     try {
                         QPreferences preferences = new QPreferences(getContext());
