@@ -51,6 +51,7 @@ import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
+import javax.mail.AuthenticationFailedException;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -179,7 +180,7 @@ public class HomeFragment extends Fragment {
                             public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
 
 
-                                Authenticate(templates.get(which),companyAdapter.getCompaniesToSend());
+                                Authenticate(templates.get(which), companyAdapter.getCompaniesToSend());
                                 return true;
                             }
                         })
@@ -206,7 +207,7 @@ public class HomeFragment extends Fragment {
         return new MaterialDialog.Builder(getActivity())
                 .title("Authentication Required")
                 .customView(v, true)
-                .positiveText("Login")
+                .positiveText("Authenticate")
                 .theme(Theme.DARK)
                 .negativeText(R.string.cancel)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -221,10 +222,10 @@ public class HomeFragment extends Fragment {
 
                         username = nameEditText.getText().toString();
                         password = email.getText().toString();
-                        preferences.edit().putString("email",username).apply();
+                        preferences.edit().putString("email", username).apply();
 
-                        for (Company company : companies){
-                            new SendEmail(template,username,password,company).execute();
+                        for (Company company : companies) {
+                            new SendEmail(template, username, password, company).execute();
                         }
 
 
@@ -482,8 +483,32 @@ public class HomeFragment extends Fragment {
 
 
                 mNotifyManager.notify(notificationId, n.build());
+            } catch (AuthenticationFailedException e) {
+
+
+                Intent intent = new Intent(getActivity(), EmailFailedActivity.class);
+
+
+                PendingIntent pIntent = PendingIntent.getActivity(getActivity(), (int) System.currentTimeMillis(), intent, 0);
+
+                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Notification n = mBuilder
+                        .setContentTitle("Your mail to " + company.getCompanyName() + " was not sent")
+                        .setContentText("Authentication Failed: Email or password Incorrect")
+                        .setSmallIcon(R.drawable.ic_stat_name)
+                        .setContentIntent(pIntent)
+                        .setSound(defaultSoundUri)
+                        .addAction(R.drawable.ic_send_black_24dp, "Report", pIntent)
+                        .setProgress(0, 0, false)
+                        .setAutoCancel(false)
+                        .build();
+
+
+                mNotifyManager.notify(notificationId, n);
+
             } catch (MessagingException e) {
 
+                e.printStackTrace();
 
                 Intent intent = new Intent(getActivity(), EmailFailedActivity.class);
 
@@ -504,15 +529,15 @@ public class HomeFragment extends Fragment {
 
 
                 mNotifyManager.notify(notificationId, n);
-
             }
 
             return "";
 
         }
+
         protected void onPostExecute(String data) {
 
-            if(data.equals("nosupport")){
+            if (data.equals("nosupport")) {
                 Toast.makeText(getContext(), "We Currently do not support your email provider ", Toast.LENGTH_LONG)
                         .show();
             }
