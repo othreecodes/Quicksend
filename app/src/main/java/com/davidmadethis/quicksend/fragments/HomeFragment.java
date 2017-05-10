@@ -453,9 +453,6 @@ public class HomeFragment extends Fragment {
 
                         multipart.addBodyPart(FileBodyPart);
                     } catch (Exception e) {
-
-                        Toast.makeText(getContext(), "Could not access CV", Toast.LENGTH_LONG)
-                                .show();
                         return "";
                     }
 

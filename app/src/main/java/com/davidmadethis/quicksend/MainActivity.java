@@ -18,11 +18,14 @@ import android.widget.TextView;
 import com.davidmadethis.quicksend.fragments.CVFragment;
 import com.davidmadethis.quicksend.fragments.HomeFragment;
 import com.davidmadethis.quicksend.fragments.TemplatesFragment;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements CVFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, TemplatesFragment.OnFragmentInteractionListener {
 
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     Fragment selectedFragment = null;
     private TextView mTextMessage;
@@ -66,8 +69,16 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, HomeFragment.newInstance());
         transaction.commit();
+
         permissionAsk();
 
+
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "App opened");
+        bundle.putString(FirebaseAnalytics.Param.VALUE, new Date().toString());
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
     }
 
