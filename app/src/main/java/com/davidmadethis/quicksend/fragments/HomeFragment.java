@@ -32,7 +32,6 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
-import com.davidmadethis.quicksend.EmailFailedActivity;
 import com.davidmadethis.quicksend.MainActivity;
 import com.davidmadethis.quicksend.R;
 import com.davidmadethis.quicksend.adapters.CompanyAdapter;
@@ -446,10 +445,6 @@ public class HomeFragment extends Fragment {
                         String fileName = cv.getName();
                         DataSource source = new FileDataSource(preferences.getCV_LOCATION());
 
-                        Log.e("jjj", source.toString());
-                        Log.e("kkk", cv.getAbsolutePath());
-                        Log.e("lll", preferences.getCV_LOCATION());
-                        Log.e("mmm", cv.getCanonicalPath());
                         FileBodyPart.setDataHandler(new DataHandler(source));
                         FileBodyPart.setFileName(fileName);
 
@@ -486,7 +481,7 @@ public class HomeFragment extends Fragment {
             } catch (AuthenticationFailedException e) {
 
 
-                Intent intent = new Intent(getActivity(), EmailFailedActivity.class);
+                Intent intent = new Intent(getActivity(), MainActivity.class);
 
 
                 PendingIntent pIntent = PendingIntent.getActivity(getActivity(), (int) System.currentTimeMillis(), intent, 0);
@@ -508,12 +503,20 @@ public class HomeFragment extends Fragment {
 
             } catch (MessagingException e) {
 
-                e.printStackTrace();
+                Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 
-                Intent intent = new Intent(getActivity(), EmailFailedActivity.class);
+                String aEmailList[] = { "contact@davidmadethis.com"};
 
-                intent.putExtra("error", e.getMessage());
-                PendingIntent pIntent = PendingIntent.getActivity(getActivity(), (int) System.currentTimeMillis(), intent, 0);
+                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, aEmailList);
+                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Error From Quicksend");
+
+                emailIntent.setType("plain/text");
+                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, e.toString());
+
+                startActivity(emailIntent);
+
+
+                PendingIntent pIntent = PendingIntent.getActivity(getActivity(), (int) System.currentTimeMillis(), emailIntent, 0);
 
                 Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                 Notification n = mBuilder
