@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +43,49 @@ import java.util.List;
  */
 public class TemplatesFragment extends Fragment {
 
+    SharedPreferences preferences;
     private OnFragmentInteractionListener mListener;
+    private RecyclerView recyclerView;
+    private FloatingActionButton floatingActionButton;
+    private TemplateAdapter templateAdapter;
+    private List<Template> templates;
+    private TemplateStorage storage;
+    private ActionMode mode;
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View v = inflater.inflate(R.layout.add_template, null);
+
+            new MaterialDialog.Builder(getActivity())
+                    .title("Add Mail Template")
+                    .customView(v, true)
+                    .positiveText(R.string.add)
+                    .theme(Theme.LIGHT)
+                    .negativeText(R.string.cancel)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            EditText subjectEditText = (EditText) v.findViewById(R.id.input_subject);
+                            EditText bodyEditText = (EditText) v.findViewById(R.id.input_text);
+
+                            subjectEditText.clearFocus();
+                            bodyEditText.clearFocus();
+
+                            Template template = new Template();
+                            template.setSubject(subjectEditText.getText().toString());
+                            template.setMessage(bodyEditText.getText().toString());
+
+                            templates.add(template);
+                            templateAdapter.notifyDataSetChanged();
+
+                            storage.saveAll(getContext(), templates);
+                        }
+                    }).show();
+
+        }
+    };
 
     public TemplatesFragment() {
         // Required empty public constructor
@@ -56,19 +97,10 @@ public class TemplatesFragment extends Fragment {
         return fragment;
     }
 
-    private RecyclerView recyclerView;
-    private FloatingActionButton floatingActionButton;
-    private TemplateAdapter templateAdapter;
-    private List<Template> templates;
-    private TemplateStorage storage;
-    private ActionMode mode;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
-    SharedPreferences preferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -181,43 +213,6 @@ public class TemplatesFragment extends Fragment {
         }));
         return v;
     }
-
-
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-
-            LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final View v = inflater.inflate(R.layout.add_template, null);
-
-            new MaterialDialog.Builder(getActivity())
-                    .title("Add Mail Template")
-                    .customView(v, true)
-                    .positiveText(R.string.add)
-                    .theme(Theme.LIGHT)
-                    .negativeText(R.string.cancel)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            EditText subjectEditText = (EditText) v.findViewById(R.id.input_subject);
-                            EditText bodyEditText = (EditText) v.findViewById(R.id.input_text);
-
-                            subjectEditText.clearFocus();
-                            bodyEditText.clearFocus();
-
-                            Template template = new Template();
-                            template.setSubject(subjectEditText.getText().toString());
-                            template.setMessage(bodyEditText.getText().toString());
-
-                            templates.add(template);
-                            templateAdapter.notifyDataSetChanged();
-
-                            storage.saveAll(getContext(), templates);
-                        }
-                    }).show();
-
-        }
-    };
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

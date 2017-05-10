@@ -14,7 +14,6 @@
     </style>
 
 
-
     <style name="MyButton" parent="Theme.AppCompat.Light">
         <item name="colorControlHighlight">@color/colorPrimary</item>
         <item name="colorButtonNormal">@color/colorPrimaryDark</item>

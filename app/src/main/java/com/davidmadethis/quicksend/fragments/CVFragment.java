@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,8 +17,6 @@ import android.widget.Toast;
 
 import com.davidmadethis.quicksend.R;
 import com.davidmadethis.quicksend.util.QPreferences;
-import com.vincent.filepicker.Constant;
-import com.vincent.filepicker.activity.NormalFilePickActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,9 +36,13 @@ import static android.app.Activity.RESULT_OK;
  * create an instance of this fragment.
  */
 public class CVFragment extends Fragment {
+    private static final int FILE_SELECT_CODE = 100;
     private final String TAG = this.getClass().getName();
     private OnFragmentInteractionListener mListener;
-
+    private ImageView imageView;
+    private TextView textView;
+    private QPreferences preferences;
+    private Button button;
     public CVFragment() {
         // Required empty public constructor
     }
@@ -51,15 +52,59 @@ public class CVFragment extends Fragment {
         return fragment;
     }
 
+    public static void copyFile(File sourceFile, File destFile) throws IOException {
+        if (!destFile.getParentFile().exists())
+            destFile.getParentFile().mkdirs();
+
+        if (!destFile.exists()) {
+            destFile.createNewFile();
+        }
+
+        FileChannel source = null;
+        FileChannel destination = null;
+
+        try {
+            source = new FileInputStream(sourceFile).getChannel();
+            destination = new FileOutputStream(destFile).getChannel();
+            destination.transferFrom(source, 0, source.size());
+        } finally {
+            if (source != null) {
+                source.close();
+            }
+            if (destination != null) {
+                destination.close();
+            }
+        }
+    }
+
+    public static String getPath(Context context, Uri uri) throws URISyntaxException {
+        if ("content".equalsIgnoreCase(uri.getScheme())) {
+            String[] projection = {"_data"};
+            Cursor cursor = null;
+
+            try {
+                cursor = context.getContentResolver().query(uri, projection, null, null, null);
+                assert cursor != null;
+                int column_index = cursor.getColumnIndexOrThrow("_data");
+                if (cursor.moveToFirst()) {
+                    return cursor.getString(column_index);
+                }
+
+            } catch (Exception e) {
+            } finally {
+                cursor.close();
+            }
+        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+
+        return null;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
-    private ImageView imageView;
-    private TextView textView;
-    private QPreferences preferences;
-    private Button button;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -123,8 +168,6 @@ public class CVFragment extends Fragment {
 
     }
 
-    private static final int FILE_SELECT_CODE = 100;
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -155,7 +198,7 @@ public class CVFragment extends Fragment {
                         setFileLogo(path);
                         preferences.setCV_LOCATION(CopyFile(file));
 
-                        Log.e("file",preferences.getCV_LOCATION());
+                        Log.e("file", preferences.getCV_LOCATION());
                     }
                 }
                 break;
@@ -164,73 +207,17 @@ public class CVFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-
     private String CopyFile(File file) {
         File fre = new File(getActivity().getExternalFilesDir(null) + File.separator + file.getName());
-        if (!fre.exists()) {
 
-
-            try {
-                copyFile(file,fre);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return fre.getAbsolutePath();
-
-        } else {
-            return fre.getAbsolutePath();
-        }
-
-    }
-
-    public static void copyFile(File sourceFile, File destFile) throws IOException {
-        if (!destFile.getParentFile().exists())
-            destFile.getParentFile().mkdirs();
-
-        if (!destFile.exists()) {
-            destFile.createNewFile();
-        }
-
-        FileChannel source = null;
-        FileChannel destination = null;
 
         try {
-            source = new FileInputStream(sourceFile).getChannel();
-            destination = new FileOutputStream(destFile).getChannel();
-            destination.transferFrom(source, 0, source.size());
-        } finally {
-            if (source != null) {
-                source.close();
-            }
-            if (destination != null) {
-                destination.close();
-            }
+            copyFile(file, fre);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
+        return fre.getAbsolutePath();
 
-    public static String getPath(Context context, Uri uri) throws URISyntaxException {
-        if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] projection = {"_data"};
-            Cursor cursor = null;
-
-            try {
-                cursor = context.getContentResolver().query(uri, projection, null, null, null);
-                assert cursor != null;
-                int column_index = cursor.getColumnIndexOrThrow("_data");
-                if (cursor.moveToFirst()) {
-                    return cursor.getString(column_index);
-                }
-
-            } catch (Exception e) {
-            } finally {
-                cursor.close();
-            }
-        } else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
-
-
-        return null;
     }
 
     public void onButtonPressed(Uri uri) {

@@ -23,12 +23,11 @@ import java.util.List;
 
 public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHolder> {
 
+    List<Company> companiesToSend;
     private List<Company> companies;
     private RecyclerView recyclerView;
-
     private CompanyStorage storage;
 
-    List<Company> companiesToSend;
     public CompanyAdapter(List<Company> companies, RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
         this.companies = companies;
@@ -59,8 +58,7 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
                     companiesToSend.add(companies.get(position));
                     Snackbar.make(recyclerView, companies.get(position).getCompanyName() + " selected", Snackbar.LENGTH_SHORT)
                             .show();
-                }
-                else{
+                } else {
                     companies.get(position).setShouldSend(false);
                     companiesToSend.remove(companies.get(position));
                 }
@@ -68,7 +66,6 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
 
             }
         });
-
 
 
         holder.editButton.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +76,7 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
                 companies.remove(companies.get(position));
                 storage.saveAll(recyclerView.getContext(), companies);
                 recyclerView.getAdapter().notifyDataSetChanged();
-                Snackbar.make(recyclerView, removed+ " Removed", Snackbar.LENGTH_SHORT)
+                Snackbar.make(recyclerView, removed + " Removed", Snackbar.LENGTH_SHORT)
                         .show();
 
             }
@@ -109,9 +106,6 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
             checkBox.setChecked(false);
         }
     }
-
-
-
 
 
 }

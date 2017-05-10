@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 
 public class QPreferences {
 
+    // Sharedpref file name
+    private static final String PREFER_NAME = "quicksend";
     // Shared Preferences reference
     private SharedPreferences pref;
     // Editor reference for Shared preferences
@@ -17,16 +19,13 @@ public class QPreferences {
     private Context _context;
     // Shared pref mode
     private int PRIVATE_MODE = 0;
-    // Sharedpref file name
-    private static final String PREFER_NAME = "quicksend";
     //sharedpref Show Tip key
-
     private String CV_LOCATION = "cv_location";
     private String NAME = "name";
     private String EMAIL = "email";
 
-    public QPreferences(Context _context){
-        this._context=_context;
+    public QPreferences(Context _context) {
+        this._context = _context;
         pref = _context.getSharedPreferences(PREFER_NAME, PRIVATE_MODE);
         editor = pref.edit();
 
@@ -34,7 +33,7 @@ public class QPreferences {
 
 
     public String getCV_LOCATION() {
-        return pref.getString(CV_LOCATION,null);
+        return pref.getString(CV_LOCATION, null);
     }
 
     public void setCV_LOCATION(String string) {
@@ -44,7 +43,7 @@ public class QPreferences {
     }
 
     public String getNAME() {
-        return pref.getString(NAME,null);
+        return pref.getString(NAME, null);
     }
 
     public void setNAME(String string) {
@@ -54,7 +53,7 @@ public class QPreferences {
     }
 
     public String getEMAIL() {
-        return pref.getString(EMAIL,null);
+        return pref.getString(EMAIL, null);
     }
 
     public void setEMAIL(String string) {

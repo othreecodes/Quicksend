@@ -6,12 +6,10 @@
     android:baselineAligned="false">
 
 
-
     <android.support.design.widget.TextInputLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.7"
-        >
+        android:layout_weight="0.7">
 
         <EditText
             android:id="@+id/input_email"
@@ -23,22 +21,22 @@
     </android.support.design.widget.TextInputLayout>
 
     <CheckBox
-        android:layout_width="0dp"
-        android:layout_margin="0dp"
-        android:padding="0dp"
         android:id="@+id/checkbox"
+        android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_weight="0.1" />
+        android:layout_margin="0dp"
+        android:layout_weight="0.1"
+        android:padding="0dp" />
 
     <ImageButton
-        android:layout_width="0dp"
-
         android:id="@+id/edit"
+
         style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_weight="0.15"
-        app:srcCompat="@drawable/ic_delete_black_24dp"
+        android:layout_width="0dp"
         android:layout_height="60dp"
-        android:contentDescription="@string/edit_company_info" />
+        android:layout_weight="0.15"
+        android:contentDescription="@string/edit_company_info"
+        app:srcCompat="@drawable/ic_delete_black_24dp" />
 
 
 </LinearLayout>

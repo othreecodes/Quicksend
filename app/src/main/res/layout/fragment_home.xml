@@ -1,8 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="20dp"
     tools:context="com.davidmadethis.quicksend.fragments.HomeFragment">
 
@@ -30,12 +30,11 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        app:backgroundTint="@color/colorPrimary"
-        app:srcCompat="@drawable/ic_add_black_24dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:rippleColor="@color/colorPrimaryDark"
         android:layout_gravity="bottom|end"
         android:layout_margin="10dp"
-        />
+        app:backgroundTint="@color/colorPrimary"
+        app:rippleColor="@color/colorPrimaryDark"
+        app:srcCompat="@drawable/ic_add_black_24dp" />
 </FrameLayout>

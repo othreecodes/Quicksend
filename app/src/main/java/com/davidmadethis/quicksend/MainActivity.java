@@ -24,8 +24,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements CVFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, TemplatesFragment.OnFragmentInteractionListener {
 
 
-    private TextView mTextMessage;
     Fragment selectedFragment = null;
+    private TextView mTextMessage;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -108,7 +108,8 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
 
         if (permission == PackageManager.PERMISSION_DENIED) {
             permStrings.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }if (permission2 == PackageManager.PERMISSION_DENIED) {
+        }
+        if (permission2 == PackageManager.PERMISSION_DENIED) {
             permStrings.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
 

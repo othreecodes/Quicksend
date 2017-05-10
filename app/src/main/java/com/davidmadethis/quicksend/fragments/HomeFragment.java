@@ -73,7 +73,51 @@ import javax.mail.internet.MimeMultipart;
  */
 public class HomeFragment extends Fragment {
 
+    SharedPreferences preferences;
     private OnFragmentInteractionListener mListener;
+    private RecyclerView mailRecyclerView;
+    private CompanyAdapter companyAdapter;
+    private List<Company> companies;
+    private FloatingActionButton fab;
+    private CompanyStorage storage;
+    private AppCompatButton sendButton;
+    private List<String> emailsToSend;
+    private String username;
+    private String password;
+    private View.OnClickListener fabListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View v = inflater.inflate(R.layout.add_company, null);
+
+            new MaterialDialog.Builder(getActivity())
+                    .title("Add Company")
+                    .customView(v, true)
+                    .positiveText(R.string.add)
+                    .theme(Theme.LIGHT)
+                    .negativeText(R.string.cancel)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            EditText nameEditText = (EditText) v.findViewById(R.id.input_name);
+                            EditText email = (EditText) v.findViewById(R.id.input_email);
+
+                            nameEditText.clearFocus();
+                            email.clearFocus();
+
+                            Company company = new Company();
+                            company.setEmailAddress(email.getText().toString());
+                            company.setCompanyName(nameEditText.getText().toString());
+
+                            companies.add(company);
+                            companyAdapter.notifyDataSetChanged();
+
+                            storage.saveAll(getContext(), companies);
+                        }
+                    }).show();
+
+        }
+    };
 
     public HomeFragment() {
         // Required empty public constructor
@@ -85,15 +129,6 @@ public class HomeFragment extends Fragment {
 
         return fragment;
     }
-
-    private RecyclerView mailRecyclerView;
-    private CompanyAdapter companyAdapter;
-    private List<Company> companies;
-    private FloatingActionButton fab;
-    private CompanyStorage storage;
-    private AppCompatButton sendButton;
-    private List<String> emailsToSend;
-    SharedPreferences preferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -192,9 +227,6 @@ public class HomeFragment extends Fragment {
         return v;
     }
 
-    private String username;
-    private String password;
-
     private MaterialDialog Authenticate(final Template template, final List<Company> companies) {
 
         LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -236,42 +268,6 @@ public class HomeFragment extends Fragment {
 
 
     }
-
-
-    private View.OnClickListener fabListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final View v = inflater.inflate(R.layout.add_company, null);
-
-            new MaterialDialog.Builder(getActivity())
-                    .title("Add Company")
-                    .customView(v, true)
-                    .positiveText(R.string.add)
-                    .theme(Theme.LIGHT)
-                    .negativeText(R.string.cancel)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            EditText nameEditText = (EditText) v.findViewById(R.id.input_name);
-                            EditText email = (EditText) v.findViewById(R.id.input_email);
-
-                            nameEditText.clearFocus();
-                            email.clearFocus();
-
-                            Company company = new Company();
-                            company.setEmailAddress(email.getText().toString());
-                            company.setCompanyName(nameEditText.getText().toString());
-
-                            companies.add(company);
-                            companyAdapter.notifyDataSetChanged();
-
-                            storage.saveAll(getContext(), companies);
-                        }
-                    }).show();
-
-        }
-    };
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -341,25 +337,32 @@ public class HomeFragment extends Fragment {
         return props;
     }
 
+    String filterTemplate(String template, Company company) {
+
+        return template.replace("{{company}}", company.getCompanyName())
+                .replace("{{name}}", preferences.getString("name", ""))
+                .replace("{{job}}", preferences.getString("position", ""))
+                .replace("\n", "<br>");
+
+
+    }
+
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
-
     class SendEmail extends AsyncTask<String, Void, String> {
-
-        private Exception exception;
 
         Template template;
         String email;
         String password;
         Company company;
-
         NotificationCompat.Builder mBuilder;
         int notificationId;
         NotificationManager mNotifyManager;
+        private Exception exception;
 
         public SendEmail(Template template, String email, String password, Company company) {
             this.template = template;
@@ -505,7 +508,7 @@ public class HomeFragment extends Fragment {
 
                 Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 
-                String aEmailList[] = { "contact@davidmadethis.com"};
+                String aEmailList[] = {"contact@davidmadethis.com"};
 
                 emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, aEmailList);
                 emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Error From Quicksend");
@@ -545,17 +548,6 @@ public class HomeFragment extends Fragment {
                         .show();
             }
         }
-    }
-
-
-    String filterTemplate(String template, Company company) {
-
-        return template.replace("{{company}}", company.getCompanyName())
-                .replace("{{name}}", preferences.getString("name", ""))
-                .replace("{{job}}", preferences.getString("position", ""))
-                .replace("\n", "<br>");
-
-
     }
 
 

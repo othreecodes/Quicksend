@@ -42,23 +42,18 @@ public class TemplateStorage {
 
         settings = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        if (settings.contains(DATA))
-        {
+        if (settings.contains(DATA)) {
             String json = settings.getString(DATA, null);
             Gson gson = new Gson();
             Template[] templates1 = gson.fromJson(json, Template[].class);
 
             templates = Arrays.asList(templates1);
-        }
-        else
-        {
+        } else {
             return null;
         }
 
         return templates;
     }
-
-
 
 
 }
