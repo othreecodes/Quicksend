@@ -11,9 +11,9 @@ Google Sometimes Blocks Gmail users from sending Emails from Unknown Sources. Yo
 
 Home Screen                |  Upload CV               |  Email Templates
 :-------------------------:|:------------------------:|:--------------------------:
-![](https://github.com/othreecodes/Quicksend/blob/master/screenshots/Screenshot_20170510-080351.png)  |  ![](https://github.com/othreecodes/Quicksend/blob/master/screenshots/Screenshot_20170510-080356.png)  | ![](https://github.com/othreecodes/Quicksend/blob/master/screenshots/Screenshot_20170510-080401.png)
+![](https://github.com/othreecodes/Quicksend/raw/master/screenshots/Screenshot_20170510-080351.png)  |  ![](https://github.com/othreecodes/Quicksend/raw/master/screenshots/Screenshot_20170510-080356.png)  | ![](https://github.com/othreecodes/Quicksend/raw/master/screenshots/Screenshot_20170510-080401.png)
 
 
 Settings                   |  Progress Notification   |  Authentication
 :-------------------------:|:------------------------:|:--------------------------:
-![](https://github.com/othreecodes/Quicksend/blob/master/screenshots/Screenshot_20170510-080410.png)  |  ![](https://github.com/othreecodes/Quicksend/blob/master/screenshots/Screenshot_20170510-050108.png)  | ![](https://github.com/othreecodes/Quicksend/blob/master/screenshots/Screenshot_20170510-080435.png)
+![](https://github.com/othreecodes/Quicksend/raw/master/screenshots/Screenshot_20170510-080410.png)  |  ![](https://github.com/othreecodes/Quicksend/raw/master/screenshots/Screenshot_20170510-050108.png)  | ![](https://github.com/othreecodes/Quicksend/raw/master/screenshots/Screenshot_20170510-080435.png)
