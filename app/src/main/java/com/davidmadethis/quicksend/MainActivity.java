@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
 
     Fragment selectedFragment = null;
     private TextView mTextMessage;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
