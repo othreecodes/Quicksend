@@ -91,6 +91,8 @@ public class HomeFragment extends Fragment {
             LayoutInflater inflater = (LayoutInflater) getActivity().getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View v = inflater.inflate(R.layout.add_company, null);
 
+            EditText email = (EditText) v.findViewById(R.id.input_email);
+            email.setText(dataEmail);
             new MaterialDialog.Builder(getActivity())
                     .title("Add Company")
                     .customView(v, true)
@@ -124,9 +126,7 @@ public class HomeFragment extends Fragment {
         // Required empty public constructor
     }
 
-
-    // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance( String email) {
+    public static HomeFragment newInstance(String email) {
         HomeFragment fragment = new HomeFragment();
         dataEmail = email;
         return fragment;
@@ -177,6 +177,10 @@ public class HomeFragment extends Fragment {
 
 
         fab.setOnClickListener(fabListener);
+
+        if(dataEmail!=null){
+            fab.performClick();
+        }
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
