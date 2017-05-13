@@ -73,6 +73,7 @@ import javax.mail.internet.MimeMultipart;
  */
 public class HomeFragment extends Fragment {
 
+    private static String dataEmail;
     SharedPreferences preferences;
     private OnFragmentInteractionListener mListener;
     private RecyclerView mailRecyclerView;
@@ -123,10 +124,11 @@ public class HomeFragment extends Fragment {
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance() {
-        HomeFragment fragment = new HomeFragment();
 
+    // TODO: Rename and change types and number of parameters
+    public static HomeFragment newInstance( String email) {
+        HomeFragment fragment = new HomeFragment();
+        dataEmail = email;
         return fragment;
     }
 

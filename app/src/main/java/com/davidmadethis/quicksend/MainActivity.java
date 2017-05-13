@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    selectedFragment = HomeFragment.newInstance();
+                    selectedFragment = HomeFragment.newInstance(recievedEmail);
                     getSupportActionBar().setTitle("Quicksend");
                     break;
                 case R.id.navigation_dashboard:
@@ -57,17 +58,27 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
 
 
     };
+    String recievedEmail = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent n = getIntent();
+        if (!n.getAction().equals("android.intent.action.MAIN")) {
+            try {
+                this.recievedEmail = n.getDataString().substring(7);
+            } catch (Exception e) {
+
+            }
+        }
         setContentView(R.layout.activity_main);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_launcher);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content, HomeFragment.newInstance());
+        transaction.replace(R.id.content, HomeFragment.newInstance(recievedEmail));
         transaction.commit();
 
         permissionAsk();
@@ -134,7 +145,19 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
                     1);
 
         }
-
-
     }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+
+        Log.e("emailaddress", intent.getData().toString());
+        super.onNewIntent(intent);
+    }
+
 }

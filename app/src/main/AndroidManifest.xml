@@ -25,6 +25,29 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+                <action android:name="android.intent.action.SENDTO"></action>
+
+                <data android:scheme="mailto"></data>
+
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <category android:name="android.intent.category.BROWSABLE"></category>
+            </intent-filter>
+
+            <intent-filter android:label="Add to Quicksend">
+
+                <action android:name="android.intent.action.SEND"></action>
+                <data android:mimeType="*/*"></data>
+                <category android:name="android.intent.category.DEFAULT"></category>
+            </intent-filter>
+
+            <intent-filter android:label="Add to Quicksend">
+
+                <action android:name="android.intent.action.SEND_MULTIPLE"></action>
+                <data android:mimeType="*/*"></data>
+                <category android:name="android.intent.category.DEFAULT"></category>
+            </intent-filter>
         </activity>
         <activity
             android:name=".SettingsActivity"
