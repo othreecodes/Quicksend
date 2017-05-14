@@ -204,7 +204,12 @@ public class HomeFragment extends Fragment {
 
                 TemplateStorage storage = new TemplateStorage();
                 final List<Template> templates = storage.getAll(getContext());
-                if (templates.size() < 1) {
+                if (templates==null) {
+                    Toast.makeText(getContext(), "No templates available." +
+                            "Add one in the templates tab", Toast.LENGTH_LONG)
+                            .show();
+                    return;
+                } else if(templates.size() < 1){
                     Toast.makeText(getContext(), "No templates available." +
                             "Add one in the templates tab", Toast.LENGTH_LONG)
                             .show();
