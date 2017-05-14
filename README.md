@@ -1,4 +1,5 @@
-# Quicksend
+# Quicksend [![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/othreecodes)
+
 Send Bulk Emails, Just because you can ;)
 
 # Hey What's this?
