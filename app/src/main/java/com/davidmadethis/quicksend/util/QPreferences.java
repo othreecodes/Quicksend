@@ -17,6 +17,7 @@ public class QPreferences {
     private SharedPreferences.Editor editor;
     // Context
     private Context _context;
+    private static final String WELCOMESCREEN_PREF="WELCOMESCREEN";
     // Shared pref mode
     private int PRIVATE_MODE = 0;
     //sharedpref Show Tip key
@@ -59,6 +60,13 @@ public class QPreferences {
     public void setEMAIL(String string) {
         editor.putString(EMAIL, string);
         editor.commit();
+        editor.apply();
+    }
+
+    public boolean isWelcomeShown(){return pref.getBoolean(WELCOMESCREEN_PREF,false);}
+
+    public void setWelcomeShown(){
+        editor.putBoolean(WELCOMESCREEN_PREF,true);
         editor.apply();
     }
 }

@@ -19,10 +19,13 @@ import android.widget.TextView;
 import com.davidmadethis.quicksend.fragments.CVFragment;
 import com.davidmadethis.quicksend.fragments.HomeFragment;
 import com.davidmadethis.quicksend.fragments.TemplatesFragment;
+import com.davidmadethis.quicksend.util.QPreferences;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.stephentuso.welcome.WelcomeHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.prefs.Preferences;
 
 public class MainActivity extends AppCompatActivity implements CVFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, TemplatesFragment.OnFragmentInteractionListener {
 
@@ -61,16 +64,29 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
     };
     String recievedEmail = null;
 
+    WelcomeHelper welcomeScreen;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent n = getIntent();
-        if (!n.getAction().equals("android.intent.action.MAIN")) {
-            try {
-                this.recievedEmail = n.getDataString().substring(7);
-            } catch (Exception e) {
 
+        if(new QPreferences(this).isWelcomeShown()){
+        }else{
+            WelcomeHelper welcomeHelper= new WelcomeHelper(this,WelcomeActivity.class);
+            welcomeHelper.show(null);
+        }
+
+
+
+        Intent n = getIntent();
+        if(n.getAction()!=null) {
+            if (!n.getAction().equals("android.intent.action.MAIN")) {
+                try {
+                    this.recievedEmail = n.getDataString().substring(7);
+
+                } catch (Exception e) {
+
+                }
             }
         }
         setContentView(R.layout.activity_main);
@@ -94,12 +110,28 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
 
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == WelcomeHelper.DEFAULT_WELCOME_SCREEN_REQUEST) {
+            new QPreferences(this).setWelcomeShown();
+//            Intent in = new Intent(this, MainActivity.class);
+//            startActivity(in);
+//            finish();
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
 
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -152,13 +184,6 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
     @Override
     protected void onResume() {
         super.onResume();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-
-        Log.e("emailaddress", intent.getData().toString());
-        super.onNewIntent(intent);
     }
 
 }
