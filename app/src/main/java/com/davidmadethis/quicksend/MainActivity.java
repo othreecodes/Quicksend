@@ -110,20 +110,6 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
 
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == WelcomeHelper.DEFAULT_WELCOME_SCREEN_REQUEST) {
-            new QPreferences(this).setWelcomeShown();
-//            Intent in = new Intent(this, MainActivity.class);
-//            startActivity(in);
-//            finish();
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);

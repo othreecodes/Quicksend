@@ -40,6 +40,7 @@ import com.davidmadethis.quicksend.models.Template;
 import com.davidmadethis.quicksend.util.CompanyStorage;
 import com.davidmadethis.quicksend.util.QPreferences;
 import com.davidmadethis.quicksend.util.TemplateStorage;
+import com.stephentuso.welcome.WelcomeHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -114,7 +115,7 @@ public class HomeFragment extends Fragment {
 
                             companies.add(company);
                             companyAdapter.notifyDataSetChanged();
-
+                            dataEmail = null;
                             storage.saveAll(getContext(), companies);
                         }
                     }).show();
@@ -311,6 +312,19 @@ public class HomeFragment extends Fragment {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == WelcomeHelper.DEFAULT_WELCOME_SCREEN_REQUEST) {
+            new QPreferences(getContext()).setWelcomeShown();
+//            Intent in = new Intent(this, MainActivity.class);
+//            startActivity(in);
+//            finish();
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 
