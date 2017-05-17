@@ -117,6 +117,16 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == WelcomeHelper.DEFAULT_WELCOME_SCREEN_REQUEST) {
+            new QPreferences(this).setWelcomeShown();
+
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
 
     @Override

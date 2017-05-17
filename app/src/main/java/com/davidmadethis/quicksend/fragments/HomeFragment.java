@@ -314,18 +314,7 @@ public class HomeFragment extends Fragment {
         return false;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == WelcomeHelper.DEFAULT_WELCOME_SCREEN_REQUEST) {
-            new QPreferences(getContext()).setWelcomeShown();
-//            Intent in = new Intent(this, MainActivity.class);
-//            startActivity(in);
-//            finish();
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 
 
     private Properties getGmailSettings() {

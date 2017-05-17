@@ -204,7 +204,7 @@ public class CVFragment extends Fragment {
                 break;
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
+//        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private String CopyFile(File file) {
