@@ -150,7 +150,7 @@ public class CVFragment extends Fragment {
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         try {
-            startActivityForResult(
+            getActivity().startActivityForResult(
                     Intent.createChooser(intent, "Select a File to Upload"),
                     FILE_SELECT_CODE);
 
@@ -170,6 +170,8 @@ public class CVFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("HEREREREE",String.valueOf(requestCode));
+
         switch (requestCode) {
             case FILE_SELECT_CODE:
                 if (resultCode == RESULT_OK) {

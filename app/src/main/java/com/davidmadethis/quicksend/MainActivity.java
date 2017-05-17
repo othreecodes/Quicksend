@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements CVFragment.OnFrag
             new QPreferences(this).setWelcomeShown();
 
         }
-
+        Log.e("INstead",String.valueOf(requestCode));
         super.onActivityResult(requestCode, resultCode, data);
     }
 
