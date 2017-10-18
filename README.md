@@ -6,8 +6,7 @@ Send Bulk Emails, Just because you can ;)
 Its A little App that helps you send bulk emails to prospective employers with your CV attached.
 
 # Download
-Download the app [Here](https://github.com/othreecodes/Quicksend/releases/download/1.0.0/QuickSend.apk)
-
+<a href='https://play.google.com/store/apps/details?id=com.davidmadethis.quicksend&utm_source=github.com&utm_campaign=github.com&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img height="100" width="300" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
 # Known Limitation
 Google Sometimes Blocks Gmail users from sending Emails from Unknown Sources. You might have to enable that to send mails via the app. Read more here - https://support.google.com/accounts/answer/6010255?hl=en
 
